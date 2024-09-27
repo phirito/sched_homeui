@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For parsing time strings
+import 'package:intl/intl.dart';
 import 'package:flutter/scheduler.dart'; // For scheduling the scroll after build
 
 void main() => runApp(ScheduleApp());
@@ -24,28 +24,28 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  int selectedDay = DateTime.now().weekday % 7; // Get current day of the week (0 = Sunday, 6 = Saturday)
+  int selectedDay = DateTime.now().weekday %
+      7; // Get current day of the week (0 = Sunday, 6 = Saturday)
   final List<String> days = ["S", "M", "T", "W", "TH", "F", "SA"];
   final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Dispose the controller when the widget is removed
+    _scrollController
+        .dispose(); // Dispose the controller when the widget is removed
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 190, 190, 190),
+      backgroundColor: const Color(0xFF8F8E8E),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 190, 190, 190),
+        backgroundColor: const Color(0xFF8F8E8E),
         actions: const [
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundImage: AssetImage('assets/profile.jpg'),
-            ),
+            child: CircleAvatar(),
           ),
         ],
       ),
@@ -69,8 +69,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
+          const Padding(
+            padding: EdgeInsets.all(10.0),
             child: Text(
               "Juan Dela Cruztzy",
               style: TextStyle(fontSize: 40),
@@ -79,13 +79,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(20.0),
                 color: const Color.fromARGB(255, 255, 255, 255),
               ),
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: days.asMap().entries.map((entry) {
@@ -99,19 +100,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           },
                           child: SizedBox(
                             width: 50,
+                            height: 55,
                             child: Container(
+                              margin: EdgeInsets.all(3),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10.0),
                                 color: selectedDay == index
-                                    ? const Color.fromARGB(255, 143, 0, 0)
-                                    : Colors.grey,
+                                    ? const Color(0xFF862349)
+                                    : Color(0xFFECECEC),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Center(
                                   child: Text(
                                     day,
-                                    style: const TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                        color: selectedDay == index
+                                            ? Color.fromARGB(255, 255, 255, 255)
+                                            : Color.fromARGB(255, 0, 0, 0),
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),
@@ -172,12 +179,84 @@ class ScheduleList extends StatelessWidget {
         'day_of_week': 3 // Wednesday
       },
       {
-        'start_time': '09:00',
-        'end_time': '10:00',
+        'start_time': '12:00',
+        'end_time': '13:00',
         'course': 'Math',
         'topic': 'Algebra',
         'instructor': 'Albert Einstein',
-        'day_of_week': 1 // Monday
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '13:00',
+        'end_time': '14:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '14:00',
+        'end_time': '15:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
+      },
+      {
+        'start_time': '15:00',
+        'end_time': '16:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 5 // Monday
       },
     ];
 
@@ -245,7 +324,7 @@ class ScheduleList extends StatelessWidget {
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     color: isCurrentTime
-                        ? const Color.fromARGB(255, 143, 0, 0)
+                        ? const Color(0xFF862349)
                         : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -315,8 +394,9 @@ class ScheduleList extends StatelessWidget {
     );
 
     // Define a time range (15 minutes before the start_time and up to the end_time)
-    final lowerBound = scheduleStartTime.subtract(Duration(minutes: 15));
+    final lowerBound = scheduleStartTime.subtract(Duration(minutes: 1));
     final upperBound = scheduleEndTime;
+    print('Now: $now, Lower Bound: $lowerBound, Upper Bound: $upperBound');
 
     // Check if the current time falls within the range (15 minutes before start_time and before end_time)
     return now.isAfter(lowerBound) && now.isBefore(upperBound);
