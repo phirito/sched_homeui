@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For parsing time strings
+import 'package:flutter/scheduler.dart'; // For scheduling the scroll after build
 
 void main() => runApp(ScheduleApp());
 
@@ -23,8 +24,15 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  int selectedDay = 3; // Default to Wednesday
+  int selectedDay = DateTime.now().weekday % 7; // Get current day of the week (0 = Sunday, 6 = Saturday)
   final List<String> days = ["S", "M", "T", "W", "TH", "F", "SA"];
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // Dispose the controller when the widget is removed
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +101,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             width: 50,
                             child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4.0),
+                                borderRadius: BorderRadius.circular(10.0),
                                 color: selectedDay == index
                                     ? const Color.fromARGB(255, 143, 0, 0)
                                     : Colors.grey,
@@ -114,7 +122,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                   ),
                   Expanded(
-                    child: ScheduleList(selectedDay: selectedDay),
+                    child: ScheduleList(
+                      selectedDay: selectedDay,
+                      scrollController: _scrollController,
+                    ),
                   ),
                 ],
               ),
@@ -128,23 +139,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
 class ScheduleList extends StatelessWidget {
   final int selectedDay;
+  final ScrollController scrollController;
 
-  ScheduleList({required this.selectedDay});
+  ScheduleList({required this.selectedDay, required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
     // List of schedules with 'start_time' and 'end_time'
     List<Map<String, dynamic>> schedules = [
       {
-        'start_time': '02:30',
-        'end_time': '03:15',
-        'course': 'Mathematics',
-        'topic': 'Chapter 1: Introduction',
-        'instructor': 'Clark Kent',
-        'day_of_week': 0 // Sunday
-      },      {
-        'start_time': '03:15',
-        'end_time': '04:00',
+        'start_time': '02:00',
+        'end_time': '02:30',
         'course': 'Mathematics',
         'topic': 'Chapter 1: Introduction',
         'instructor': 'Clark Kent',
@@ -181,12 +186,29 @@ class ScheduleList extends StatelessWidget {
         .where((schedule) => schedule['day_of_week'] == selectedDay)
         .toList();
 
+    // Find the index of the first highlighted schedule (if any)
+    int highlightedIndex = filteredSchedules.indexWhere((schedule) {
+      return checkIfCurrentTime(schedule['start_time']!, schedule['end_time']!);
+    });
+
+    // Scroll to the highlighted schedule after build
+    if (highlightedIndex != -1) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        scrollController.animateTo(
+          highlightedIndex * 105.0, // Estimate height of the item
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
+
     return ListView.builder(
+      controller: scrollController,
       itemCount: filteredSchedules.length,
       itemBuilder: (context, index) {
         var schedule = filteredSchedules[index];
-        bool isCurrentTime = checkIfCurrentTime(
-            schedule['start_time']!, schedule['end_time']!);
+        bool isCurrentTime =
+            checkIfCurrentTime(schedule['start_time']!, schedule['end_time']!);
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -196,12 +218,24 @@ class ScheduleList extends StatelessWidget {
               // Time Column
               Container(
                 width: 60, // Fixed width for time
-                child: Text(
-                  schedule['start_time']!,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      schedule['start_time']!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      schedule['end_time']!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 126, 126, 126),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 10), // Space between time and container
@@ -221,7 +255,8 @@ class ScheduleList extends StatelessWidget {
                       Text(
                         schedule['course']!,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                           color: isCurrentTime
                               ? const Color.fromARGB(255, 255, 255, 255)
                               : const Color.fromARGB(255, 3, 3, 3),
