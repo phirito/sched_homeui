@@ -133,32 +133,60 @@ class ScheduleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> schedules = [
+    // List of schedules with 'start_time' and 'end_time'
+    List<Map<String, dynamic>> schedules = [
       {
-        'time': '02:40',
+        'start_time': '02:30',
+        'end_time': '03:15',
         'course': 'Mathematics',
         'topic': 'Chapter 1: Introduction',
-        'instructor': 'Clark Kent'
+        'instructor': 'Clark Kent',
+        'day_of_week': 0 // Sunday
+      },      {
+        'start_time': '03:15',
+        'end_time': '04:00',
+        'course': 'Mathematics',
+        'topic': 'Chapter 1: Introduction',
+        'instructor': 'Clark Kent',
+        'day_of_week': 0 // Sunday
       },
       {
-        'time': '10:00',
+        'start_time': '10:00',
+        'end_time': '11:00',
         'course': 'Science',
         'topic': 'Chapter 2: Physics',
-        'instructor': 'Bruce Wayne'
+        'instructor': 'Bruce Wayne',
+        'day_of_week': 3 // Wednesday
       },
       {
-        'time': '11:35',
+        'start_time': '11:35',
+        'end_time': '12:30',
         'course': 'History',
         'topic': 'Ancient Civilizations',
-        'instructor': 'Diana Prince'
+        'instructor': 'Diana Prince',
+        'day_of_week': 3 // Wednesday
+      },
+      {
+        'start_time': '09:00',
+        'end_time': '10:00',
+        'course': 'Math',
+        'topic': 'Algebra',
+        'instructor': 'Albert Einstein',
+        'day_of_week': 1 // Monday
       },
     ];
 
+    // Filter schedules based on the selected day
+    List<Map<String, dynamic>> filteredSchedules = schedules
+        .where((schedule) => schedule['day_of_week'] == selectedDay)
+        .toList();
+
     return ListView.builder(
-      itemCount: schedules.length,
+      itemCount: filteredSchedules.length,
       itemBuilder: (context, index) {
-        var schedule = schedules[index];
-        bool isCurrentTime = checkIfCurrentTime(schedule['time']!);
+        var schedule = filteredSchedules[index];
+        bool isCurrentTime = checkIfCurrentTime(
+            schedule['start_time']!, schedule['end_time']!);
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -169,7 +197,7 @@ class ScheduleList extends StatelessWidget {
               Container(
                 width: 60, // Fixed width for time
                 child: Text(
-                  schedule['time']!,
+                  schedule['start_time']!,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -192,21 +220,21 @@ class ScheduleList extends StatelessWidget {
                     children: [
                       Text(
                         schedule['course']!,
-                        style:  TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color:  isCurrentTime
-                        ? const Color.fromARGB(255, 255, 255, 255)
-                        : const Color.fromARGB(255, 3, 3, 3),
+                          color: isCurrentTime
+                              ? const Color.fromARGB(255, 255, 255, 255)
+                              : const Color.fromARGB(255, 3, 3, 3),
                         ),
                       ),
                       const SizedBox(height: 5),
                       Text(
                         schedule['topic']!,
-                        style:  TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color:  isCurrentTime
-                        ? const Color.fromARGB(255, 255, 255, 255)
-                        : const Color.fromARGB(255, 3, 3, 3),
+                          color: isCurrentTime
+                              ? const Color.fromARGB(255, 255, 255, 255)
+                              : const Color.fromARGB(255, 3, 3, 3),
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -214,9 +242,9 @@ class ScheduleList extends StatelessWidget {
                         schedule['instructor']!,
                         style: TextStyle(
                           fontSize: 12,
-                          color:  isCurrentTime
-                        ? const Color.fromARGB(255, 255, 255, 255)
-                        : const Color.fromARGB(255, 3, 3, 3),
+                          color: isCurrentTime
+                              ? const Color.fromARGB(255, 255, 255, 255)
+                              : const Color.fromARGB(255, 3, 3, 3),
                         ),
                       ),
                     ],
@@ -230,24 +258,32 @@ class ScheduleList extends StatelessWidget {
     );
   }
 
-bool checkIfCurrentTime(String time) {
-  // Get today's date
-  DateTime now = DateTime.now();
+  bool checkIfCurrentTime(String startTime, String endTime) {
+    // Get today's date
+    DateTime now = DateTime.now();
 
-  // Parse the given time string (e.g., '10:00') into a DateTime object for today
-  final scheduleTime = DateTime(
-    now.year,
-    now.month,
-    now.day,
-    int.parse(time.split(":")[0]), // hour
-    int.parse(time.split(":")[1]), // minute
-  );
+    // Parse the start_time and end_time string into DateTime objects for today
+    final scheduleStartTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(startTime.split(":")[0]), // hour
+      int.parse(startTime.split(":")[1]), // minute
+    );
 
-  // Define a time range (e.g., 15 minutes before and after the schedule time)
-  final lowerBound = scheduleTime.subtract(Duration(minutes: 15));
-  final upperBound = scheduleTime.add(Duration(minutes: 15));
+    final scheduleEndTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(endTime.split(":")[0]), // hour
+      int.parse(endTime.split(":")[1]), // minute
+    );
 
-  // Check if the current time falls within the range
-  return now.isAfter(lowerBound) && now.isBefore(upperBound);
-}
+    // Define a time range (15 minutes before the start_time and up to the end_time)
+    final lowerBound = scheduleStartTime.subtract(Duration(minutes: 15));
+    final upperBound = scheduleEndTime;
+
+    // Check if the current time falls within the range (15 minutes before start_time and before end_time)
+    return now.isAfter(lowerBound) && now.isBefore(upperBound);
+  }
 }
