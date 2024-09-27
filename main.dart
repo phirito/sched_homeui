@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart'; // For parsing time strings
 
 void main() => runApp(ScheduleApp());
 
@@ -10,7 +10,7 @@ class ScheduleApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Schedule App',
       theme: ThemeData(
-        primarySwatch: Colors.cyan, // Custom color for your theme
+        primarySwatch: Colors.cyan,
       ),
       home: ScheduleScreen(),
     );
@@ -36,29 +36,24 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Padding(
             padding: EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage: AssetImage('assets/profile.jpg'), // User image
+              backgroundImage: AssetImage('assets/profile.jpg'),
             ),
           ),
         ],
       ),
       drawer: Drawer(
-        // Drawer menu items
         child: ListView(
           children: [
             const DrawerHeader(
-              child: const Text('Menu'),
+              child: Text('Menu'),
             ),
             ListTile(
               title: const Text('Option 1'),
-              onTap: () {
-                // Handle tap
-              },
+              onTap: () {},
             ),
             ListTile(
               title: const Text('Option 2'),
-              onTap: () {
-                // Handle tap
-              },
+              onTap: () {},
             ),
           ],
         ),
@@ -67,7 +62,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Text(
               "Juan Dela Cruztzy",
               style: TextStyle(fontSize: 40),
@@ -82,42 +77,42 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               child: Column(
                 children: [
                   Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: days.asMap().entries.map((entry) {
-                          int index = entry.key;
-                          String day = entry.value;
-                          return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedDay = index;
-                              });
-                            },
-                            child: SizedBox(
-                              // Add this widget
-                              width: 50, // Set a fixed width
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  color: selectedDay == index
-                                      ? const Color.fromARGB(255, 143, 0, 0)
-                                      : Colors.grey,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Center(
-                                    child: Text(
-                                      day,
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: days.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        String day = entry.value;
+                        return InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedDay = index;
+                            });
+                          },
+                          child: SizedBox(
+                            width: 50,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4.0),
+                                color: selectedDay == index
+                                    ? const Color.fromARGB(255, 143, 0, 0)
+                                    : Colors.grey,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Center(
+                                  child: Text(
+                                    day,
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ),
                             ),
-                          );
-                        }).toList(),
-                      )),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                   Expanded(
                     child: ScheduleList(selectedDay: selectedDay),
                   ),
@@ -140,23 +135,22 @@ class ScheduleList extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Map<String, String>> schedules = [
       {
-        'time': '11:35',
-        'course': 'Mathematics',
-        'topic': 'Chapter 1: Introduction',
-        'instructor': 'Clark Kent'
-      },
-      // Add more schedules for each day here...
-      {
-        'time': '11:35',
+        'time': '02:40',
         'course': 'Mathematics',
         'topic': 'Chapter 1: Introduction',
         'instructor': 'Clark Kent'
       },
       {
+        'time': '10:00',
+        'course': 'Science',
+        'topic': 'Chapter 2: Physics',
+        'instructor': 'Bruce Wayne'
+      },
+      {
         'time': '11:35',
-        'course': 'Mathematics',
-        'topic': 'Chapter 1: Introduction',
-        'instructor': 'Clark Kent'
+        'course': 'History',
+        'topic': 'Ancient Civilizations',
+        'instructor': 'Diana Prince'
       },
     ];
 
@@ -167,49 +161,93 @@ class ScheduleList extends StatelessWidget {
         bool isCurrentTime = checkIfCurrentTime(schedule['time']!);
 
         return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 5.0),
-            padding: const EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
-              color: isCurrentTime
-                  ? const Color.fromARGB(255, 143, 0, 0)
-                  : Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(4.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Time Column
+              Container(
+                width: 60, // Fixed width for time
+                child: Text(
                   schedule['time']!,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Text(
-                  schedule['course']!,
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
+              ),
+              const SizedBox(width: 10), // Space between time and container
+              // Schedule Detail Container
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: isCurrentTime
+                        ? const Color.fromARGB(255, 143, 0, 0)
+                        : Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        schedule['course']!,
+                        style:  TextStyle(
+                          fontSize: 14,
+                          color:  isCurrentTime
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 3, 3, 3),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        schedule['topic']!,
+                        style:  TextStyle(
+                          fontSize: 12,
+                          color:  isCurrentTime
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 3, 3, 3),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        schedule['instructor']!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:  isCurrentTime
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 3, 3, 3),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Text(
-                  schedule['topic']!,
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
-                ),
-                Text(
-                  schedule['instructor']!,
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  // Dummy function to check if current time matches schedule time
-  bool checkIfCurrentTime(String time) {
-    // Logic to check if current time is within the schedule's time frame
-    return DateTime.now().hour == 11 &&
-        DateTime.now().minute == 35; // For example
-  }
-}
+bool checkIfCurrentTime(String time) {
+  // Get today's date
+  DateTime now = DateTime.now();
 
+  // Parse the given time string (e.g., '10:00') into a DateTime object for today
+  final scheduleTime = DateTime(
+    now.year,
+    now.month,
+    now.day,
+    int.parse(time.split(":")[0]), // hour
+    int.parse(time.split(":")[1]), // minute
+  );
+
+  // Define a time range (e.g., 15 minutes before and after the schedule time)
+  final lowerBound = scheduleTime.subtract(Duration(minutes: 15));
+  final upperBound = scheduleTime.add(Duration(minutes: 15));
+
+  // Check if the current time falls within the range
+  return now.isAfter(lowerBound) && now.isBefore(upperBound);
+}
+}
